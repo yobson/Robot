@@ -1,0 +1,1 @@
+gcc -o Robot src/main.c -lnewt
