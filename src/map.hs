@@ -60,7 +60,3 @@ costCalc v n = ([calc c n | c <- v])
             where right = costCalc v n !! (coordToIndex (x+1,y))
                   down  = costCalc v n !! (coordToIndex (x,y+1))
             -- | otherwise = Cost 10 (1,1)
-
-ob = Clear : Clear : Blocked : Clear : Clear : Blocked : Clear : Clear : Clear : []
-mapInit = fullMapInit ob
-ini = mapInit (0,2)
