@@ -59,4 +59,3 @@ costCalc v n = ([calc c n | c <- v])
             | otherwise = min right down
             where right = costCalc v n !! (coordToIndex (x+1,y))
                   down  = costCalc v n !! (coordToIndex (x,y+1))
-            -- | otherwise = Cost 10 (1,1)
