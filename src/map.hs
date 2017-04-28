@@ -7,6 +7,8 @@ where
 mapWidth = 3
 mapHeight = 3
 
+numMap = [0..(mapWidth * mapHeight -1)]
+
 data Vector = Cost Int Coord | Uncalculated | Impossible deriving (Show, Eq)
 data Obsticle = Blocked | Clear deriving (Show, Eq)
 
@@ -49,13 +51,26 @@ applyObsticleMap (o:os) (v:vs)
 fullMapInit :: [Obsticle] -> Coord -> [Vector]
 fullMapInit o = (applyObsticleMap o) . initVectorMap
 
-costCalc :: [Vector] -> Coord -> [Vector]
-costCalc v n = ([calc c n | c <- v])
-    where calc (Impossible) _ = Impossible
-          calc (Cost a b) _ = Cost a b
-          calc Uncalculated (x,y) 
-            | x >= mapWidth = Impossible
-            | y >= mapHeight = Impossible
-            | otherwise = min right down
-            where right = costCalc v n !! (coordToIndex (x+1,y))
-                  down  = costCalc v n !! (coordToIndex (x,y+1))
+getNextCells :: [a] -> Coord -> [Coord]
+getNextCells v (x,y) = [n | n <- a++b++c++d]
+    where get :: [a] -> Coord -> [Coord]
+          get vec (xx,yy)
+            | xx >= mapWidth = []
+            | yy >= mapWidth = []
+            | otherwise = [(xx,yy)]
+          a = get v (x-1,y)
+          b = get v (x,y-1)
+          c = get v (x+1,y)
+          d = get v (x,y+1)
+
+replaceNth :: [a] -> Int -> a -> [a]
+replaceNth (x:xs) 0 val = val:xs
+replaceNth (x:xs) n val = x : replaceNth xs (n-1) val
+
+orderForSort :: [a] -> Coord -> [a]
+orderForSort m c = [m !! n | n <- trans [] [(coordToIndex c)]]
+    where trans :: [Int] -> [Int] -> [Int]
+          trans acc [] = acc
+          trans acc (x:xs) = trans (acc ++ [x]) (xs ++ [g | n <- getNextCells numMap (indexToCoord x), let g = coordToIndex n, (g `elem` acc) /= True])
+
+--costCalc :: [Vector] -> Coord -> Vector
