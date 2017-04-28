@@ -67,10 +67,12 @@ replaceNth :: [a] -> Int -> a -> [a]
 replaceNth (x:xs) 0 val = val:xs
 replaceNth (x:xs) n val = x : replaceNth xs (n-1) val
 
+trans :: [Int] -> [Int] -> [Int]
+trans acc [] = reverse acc
+trans acc (x:xs) = trans (x : acc) (xs ++ (filter (\el -> (el `elem` acc) /= True) $ xs ++ (map coordToIndex (gnc x))))
+    where gnc = (getNextCells numMap) . indexToCoord
+
 orderForSort :: [a] -> Coord -> [a]
 orderForSort m c = [m !! n | n <- trans [] [(coordToIndex c)]]
-    where trans :: [Int] -> [Int] -> [Int]
-          trans acc [] = acc
-          trans acc (x:xs) = trans (acc ++ [x]) (xs ++ [g | n <- getNextCells numMap (indexToCoord x), let g = coordToIndex n, (g `elem` acc) /= True])
 
 --costCalc :: [Vector] -> Coord -> Vector
